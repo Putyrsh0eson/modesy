@@ -159,12 +159,16 @@ export default function MessagesPage() {
       if (!activeThread) return;
 
       // Send real message without any fake auto-reply!
+      const chatSender: ChatUser = {
+        ...currentUser,
+        id: currentUser.id.toString(),
+      };
       const newMsg = await chatService.sendMessage(
         Number(selectedThreadId),
         currentUser.id,
         activeThread.otherUser.id,
         messageText,
-        currentUser
+        chatSender
       );
 
       // Update message state directly with duplicate guard

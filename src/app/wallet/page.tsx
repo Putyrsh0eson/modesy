@@ -220,14 +220,14 @@ export default function WalletPage() {
     }
     setDepositError('');
     const nextBalance = balance + val;
-    const nextDeposits = [
+    const nextDeposits: DepositRecord[] = [
         {
           id: Date.now(),
           depositNumber: `DEP-${Math.floor(100000 + Math.random() * 900000)}`,
           paymentMethod: depositMethod === 'stripe' ? 'Credit Card (Stripe)' : 'PayPal',
           amount: val,
           currency: 'USD',
-          status: 'Completed',
+          status: 'Completed' as const,
           date: new Date().toISOString().replace('T', ' ').substring(0, 16)
         },
         ...deposits

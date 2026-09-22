@@ -87,9 +87,10 @@ export const chatService = {
     currentUserId: string | number,
     onChange: () => void
   ): (() => void) | null => {
-    if (!supabase) return null;
+    const client = supabase;
+    if (!client) return null;
 
-    const channel = supabase
+    const channel = client
       .channel(`chat-live-${threadId}-${String(currentUserId)}`)
       .on(
         'postgres_changes',
@@ -104,7 +105,7 @@ export const chatService = {
       .subscribe();
 
     return () => {
-      void supabase.removeChannel(channel);
+      void client.removeChannel(channel);
     };
   },
 
