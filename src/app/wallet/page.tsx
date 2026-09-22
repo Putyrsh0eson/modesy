@@ -4,7 +4,20 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useModesy } from '@/context/ModesyContext';
 import { marketplaceStore } from '@/services/marketplaceStore';
-import { Plus, X, Check, ArrowDownLeft, ArrowUpRight, CreditCard, Building, ShieldCheck } from 'lucide-react';
+import { Plus, X, Check, ArrowDownLeft, ArrowUpRight, CreditCard, Building, ShieldCheck, QrCode, WalletCards } from 'lucide-react';
+
+declare global {
+  interface Window {
+    snap?: {
+      pay: (token: string, options: {
+        onSuccess?: () => void;
+        onPending?: () => void;
+        onError?: () => void;
+        onClose?: () => void;
+      }) => void;
+    };
+  }
+}
 
 interface WalletEarningRecord {
   orderNumber: string;
@@ -54,10 +67,11 @@ export default function WalletPage() {
   const [activeTab, setActiveTab] = useState<'earnings' | 'deposits' | 'expenses' | 'payouts' | 'set_payout'>('earnings');
   const [balance, setBalance] = useState<number>(1465);
   const [isAddFundsOpen, setIsAddFundsOpen] = useState(false);
-  const [depositAmount, setDepositAmount] = useState('100');
-  const [depositMethod, setDepositMethod] = useState('stripe');
+  const [depositAmount, setDepositAmount] = useState('50');
+  const [depositMethod, setDepositMethod] = useState('bank_transfer');
   const [depositSuccess, setDepositSuccess] = useState(false);
   const [depositError, setDepositError] = useState('');
+  const [isDepositProcessing, setIsDepositProcessing] = useState(false);
 
   // Initial Earnings matching Screenshot 2 exactly
   const [earnings, setEarnings] = useState<WalletEarningRecord[]>([
@@ -173,6 +187,20 @@ export default function WalletPage() {
     }
   }, [walletStorageKey]);
 
+  useEffect(() => {
+    const scriptId = 'midtrans-wallet-snap-script';
+    if (document.getElementById(scriptId)) return;
+
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true'
+      ? 'https://app.midtrans.com/snap/snap.js'
+      : 'https://app.sandbox.midtrans.com/snap/snap.js';
+    script.setAttribute('data-client-key', process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '');
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
+
   // Sync dynamically with marketplaceStore
   useEffect(() => {
     const syncFromStore = () => {
@@ -211,7 +239,7 @@ export default function WalletPage() {
     return marketplaceStore.subscribe(syncFromStore);
   }, []);
 
-  const handleAddFundsSubmit = (e: React.FormEvent) => {
+  const handleAddFundsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const val = parseFloat(depositAmount);
     if (isNaN(val) || val < 10) {
@@ -219,27 +247,64 @@ export default function WalletPage() {
       return;
     }
     setDepositError('');
-    const nextBalance = balance + val;
-    const nextDeposits: DepositRecord[] = [
-        {
-          id: Date.now(),
-          depositNumber: `DEP-${Math.floor(100000 + Math.random() * 900000)}`,
-          paymentMethod: depositMethod === 'stripe' ? 'Credit Card (Stripe)' : 'PayPal',
-          amount: val,
-          currency: 'USD',
-          status: 'Completed' as const,
-          date: new Date().toISOString().replace('T', ' ').substring(0, 16)
+    if (!window.snap) {
+      setDepositError('Midtrans is still loading. Please try again in a moment.');
+      return;
+    }
+
+    setIsDepositProcessing(true);
+    try {
+      const orderId = `WALLET-${Date.now()}`;
+      const response = await fetch('/api/payments/midtrans', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          grossAmount: Math.round(val * 16000),
+          customer: {
+            firstName: user?.username || 'Modesy Customer',
+            email: user?.email,
+          },
+        }),
+      });
+      const result = await response.json() as { token?: string; error?: string };
+      if (!response.ok || !result.token) throw new Error(result.error || 'Unable to start payment.');
+
+      window.snap.pay(result.token, {
+        onSuccess: () => {
+          const nextBalance = balance + val;
+          const nextDeposits: DepositRecord[] = [{
+            id: Date.now(),
+            depositNumber: orderId,
+            paymentMethod: depositMethod === 'bank_transfer'
+              ? 'Bank Transfer / Virtual Account'
+              : depositMethod === 'card'
+                ? 'Credit / Debit Card'
+                : depositMethod === 'qris'
+                  ? 'QRIS / Midtrans Instant Pay'
+                  : 'PayPal Account',
+            amount: val,
+            currency: 'USD',
+            status: 'Completed',
+            date: new Date().toISOString().replace('T', ' ').substring(0, 16),
+          }, ...deposits];
+          setBalance(nextBalance);
+          setDeposits(nextDeposits);
+          localStorage.setItem(walletStorageKey, JSON.stringify({ balance: nextBalance, deposits: nextDeposits }));
+          setDepositSuccess(true);
+          setIsDepositProcessing(false);
         },
-        ...deposits
-      ];
-      setBalance(nextBalance);
-      setDeposits(nextDeposits);
-      localStorage.setItem(walletStorageKey, JSON.stringify({ balance: nextBalance, deposits: nextDeposits }));
-      setDepositSuccess(true);
-      setTimeout(() => {
-        setDepositSuccess(false);
-        setIsAddFundsOpen(false);
-      }, 1000);
+        onPending: () => setIsDepositProcessing(false),
+        onError: () => {
+          setDepositError('Payment failed. Please try again.');
+          setIsDepositProcessing(false);
+        },
+        onClose: () => setIsDepositProcessing(false),
+      });
+    } catch (error) {
+      setDepositError(error instanceof Error ? error.message : 'Unable to start payment.');
+      setIsDepositProcessing(false);
+    }
   };
 
   const handleSavePayoutAccount = (e: React.FormEvent) => {
@@ -686,9 +751,10 @@ export default function WalletPage() {
       {isAddFundsOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="fixed inset-0 bg-black/60 transition-opacity" onClick={() => setIsAddFundsOpen(false)} />
-          <div className="relative z-10 w-full max-w-[480px] rounded-[4px] border border-[#d8d8d8] bg-white p-6 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-center w-full font-semibold text-[18px] text-[#333333]">Add Funds</h3>
+          <div className="relative z-10 w-full max-w-[380px] rounded-[5px] border border-[#d8d8d8] bg-white p-5 shadow-2xl animate-in fade-in zoom-in-95 duration-150">
+            <div className="mb-4">
+              <h3 className="font-bold text-[17px] text-[#222222]">Add Funds to Wallet</h3>
+              <p className="mt-1 text-[11px] leading-relaxed text-[#777777]">Deposit funds to pay for your orders instantly without re-entering payment info.</p>
               <button
                 type="button"
                 onClick={() => setIsAddFundsOpen(false)}
@@ -706,11 +772,20 @@ export default function WalletPage() {
                 </div>
                 <h4 className="font-bold text-base text-[#203145]">Funds Added Successfully!</h4>
                 <p className="text-xs text-gray-500">Your wallet balance has been topped up by ${depositAmount}.</p>
+                <button type="button" onClick={() => { setDepositSuccess(false); setIsAddFundsOpen(false); }} className="mt-3 h-9 px-5 rounded bg-[#00a99d] text-white text-xs font-semibold">Done</button>
               </div>
             ) : (
               <form onSubmit={handleAddFundsSubmit} className="space-y-2">
                 <div>
-                  <label className="block text-xs font-medium text-[#333333] mb-1">Enter Amount</label>
+                  <label className="block text-[11px] font-semibold text-[#333333] mb-1.5">Quick Select Amount:</label>
+                  <div className="grid grid-cols-4 gap-2 mb-3">
+                    {[10, 25, 50, 100].map((amount) => (
+                      <button key={amount} type="button" onClick={() => setDepositAmount(String(amount))} className={`h-8 rounded border text-xs font-semibold ${depositAmount === String(amount) ? 'border-[#00a99d] bg-[#00a99d] text-white' : 'border-[#e1e1e1] bg-[#fafafa] text-[#555555]'}`}>
+                        ${amount}
+                      </button>
+                    ))}
+                  </div>
+                  <label className="block text-[11px] font-semibold text-[#333333] mb-1.5">Or Enter Custom Amount ($) *</label>
                   <div className="flex h-9 border border-[#dcdfe6] rounded-[3px] overflow-hidden">
                     <span className="flex w-9 items-center justify-center bg-[#f1f2f4] text-xs font-semibold text-[#333333]">$</span>
                     <input
@@ -723,41 +798,65 @@ export default function WalletPage() {
                       className="w-full px-3 text-xs text-[#333333] focus:outline-none"
                     />
                   </div>
-                  <p className="mt-1 text-xs text-[#555555]">Minimum Deposit Amount: <strong>$10</strong></p>
+                  <p className="mt-1 text-[10px] text-[#555555]">Minimum Deposit Amount: <strong>$10</strong></p>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[#333333] mb-1.5">Select Payment Method</label>
-                  <div className="grid grid-cols-2 gap-2">
+                  <label className="block text-[11px] font-semibold text-[#333333] mb-1.5">Payment Method:</label>
+                  <div className="space-y-1.5">
                     <button
                       type="button"
-                      onClick={() => setDepositMethod('stripe')}
-                      className={`p-3 rounded border text-center text-xs font-semibold transition-colors cursor-pointer ${
-                        depositMethod === 'stripe' ? 'border-[#00a99d] bg-teal-50 text-[#00a99d]' : 'border-gray-200 text-gray-600'
+                      onClick={() => setDepositMethod('bank_transfer')}
+                      className={`w-full p-2.5 rounded border text-left text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer ${
+                        depositMethod === 'bank_transfer' ? 'border-[#00a99d] bg-teal-50/60 text-[#333333]' : 'border-gray-200 text-gray-600'
                       }`}
                     >
-                      Credit Card (Stripe)
+                      <Building className="w-4 h-4 text-[#00a99d]" /> Bank Transfer / Virtual Account
+                      <span className="ml-auto">{depositMethod === 'bank_transfer' ? '●' : '○'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDepositMethod('card')}
+                      className={`w-full p-2.5 rounded border text-left text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer ${
+                        depositMethod === 'card' ? 'border-[#00a99d] bg-teal-50/60 text-[#333333]' : 'border-gray-200 text-gray-600'
+                      }`}
+                    >
+                      <CreditCard className="w-4 h-4 text-[#777777]" /> Credit / Debit Card
+                      <span className="ml-auto">{depositMethod === 'card' ? '●' : '○'}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDepositMethod('qris')}
+                      className={`w-full p-2.5 rounded border text-left text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer ${
+                        depositMethod === 'qris' ? 'border-[#00a99d] bg-teal-50/60 text-[#333333]' : 'border-gray-200 text-gray-600'
+                      }`}
+                    >
+                      <QrCode className="w-4 h-4 text-[#777777]" /> QRIS / Midtrans Instant Pay
+                      <span className="ml-auto">{depositMethod === 'qris' ? '●' : '○'}</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setDepositMethod('paypal')}
-                      className={`p-3 rounded border text-center text-xs font-semibold transition-colors cursor-pointer ${
-                        depositMethod === 'paypal' ? 'border-[#00a99d] bg-teal-50 text-[#00a99d]' : 'border-gray-200 text-gray-600'
+                      className={`w-full p-2.5 rounded border text-left text-xs font-semibold flex items-center gap-2 transition-colors cursor-pointer ${
+                        depositMethod === 'paypal' ? 'border-[#00a99d] bg-teal-50/60 text-[#333333]' : 'border-gray-200 text-gray-600'
                       }`}
                     >
-                      PayPal Express
+                      <WalletCards className="w-4 h-4 text-[#777777]" /> PayPal Account
+                      <span className="ml-auto">{depositMethod === 'paypal' ? '●' : '○'}</span>
                     </button>
                   </div>
                 </div>
 
                 {depositError && <p className="text-xs font-medium text-rose-600">{depositError}</p>}
 
-                <div className="pt-3">
+                <div className="pt-3 flex justify-end gap-2">
+                  <button type="button" onClick={() => setIsAddFundsOpen(false)} className="h-9 px-4 rounded border border-[#dddddd] text-xs font-semibold text-[#666666]">Cancel</button>
                   <button
                     type="submit"
-                    className="w-full h-10 bg-[#00a99d] hover:bg-[#008e84] text-white font-semibold text-xs rounded transition-colors shadow-2xs cursor-pointer"
+                    disabled={isDepositProcessing}
+                    className="h-9 px-4 bg-[#00a99d] hover:bg-[#008e84] text-white font-semibold text-xs rounded transition-colors shadow-2xs cursor-pointer disabled:opacity-60"
                   >
-                    Continue to Checkout
+                    {isDepositProcessing ? 'Processing...' : `Deposit $${parseFloat(depositAmount || '0').toFixed(2)}`}
                   </button>
                 </div>
               </form>
