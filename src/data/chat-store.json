@@ -1,0 +1,409 @@
+{
+  "threads": [
+    {
+      "id": 1790056925112593,
+      "user1Id": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+      "user2Id": "1",
+      "subject": "Direct message",
+      "lastMessage": "woi",
+      "lastMessageTime": "01:02 PM",
+      "updatedAt": 1790056929503
+    },
+    {
+      "id": 1789717567930963,
+      "user1Id": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+      "user2Id": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+      "subject": "Direct message",
+      "lastMessage": "hi besti",
+      "lastMessageTime": "01:01 PM",
+      "updatedAt": 1790056913739
+    },
+    {
+      "id": 1,
+      "user1Id": "5",
+      "user2Id": "3",
+      "subject": "Floral Print Summer Dress - Sizing & Availability",
+      "product": {
+        "id": 1,
+        "title": "Floral Print Summer Dress",
+        "price": 34,
+        "image": "/sites/modesy/banner-clothing.jpg"
+      },
+      "lastMessage": "We also offer free size exchanges within 14 days of delivery if needed :)",
+      "lastMessageTime": "11:25 AM",
+      "updatedAt": 1789449577630
+    },
+    {
+      "id": 2,
+      "user1Id": "5",
+      "user2Id": "1",
+      "subject": "Order #10019 Tracking Update & Support",
+      "lastMessage": "haloo",
+      "lastMessageTime": "12.39",
+      "updatedAt": 1789450757038
+    },
+    {
+      "id": 3,
+      "user1Id": "4",
+      "user2Id": "3",
+      "subject": "Question about Black bag over the shoulder delivery",
+      "product": {
+        "id": 6,
+        "title": "Black bag over the shoulder",
+        "price": 48,
+        "image": "/sites/modesy/banner-clothing.jpg"
+      },
+      "lastMessage": "Yes Peter, it comes with an adjustable and detachable leather shoulder strap!",
+      "lastMessageTime": "Yesterday",
+      "updatedAt": 1789364077630
+    }
+  ],
+  "messages": {
+    "1": [
+      {
+        "id": 101,
+        "threadId": 1,
+        "senderId": "5",
+        "receiverId": "3",
+        "senderName": "Saadan",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "Hi Trendshop, is the Floral Print Summer Dress true to size or should I size up for a relaxed fit?",
+        "createdAt": "11:20 AM",
+        "timestamp": 1789449277630,
+        "isRead": true
+      },
+      {
+        "id": 102,
+        "threadId": 1,
+        "senderId": "3",
+        "receiverId": "5",
+        "senderName": "Trendshop",
+        "senderAvatar": "/sites/modesy/avatar-vendor.jpg",
+        "message": "Hello Saadan! It has a stretchy elastic waistline and fits true to size. If you prefer a loose look, size M would also work nicely!",
+        "createdAt": "11:24 AM",
+        "timestamp": 1789449517630,
+        "isRead": true
+      },
+      {
+        "id": 103,
+        "threadId": 1,
+        "senderId": "3",
+        "receiverId": "5",
+        "senderName": "Trendshop",
+        "senderAvatar": "/sites/modesy/avatar-vendor.jpg",
+        "message": "We also offer free size exchanges within 14 days of delivery if needed :)",
+        "createdAt": "11:25 AM",
+        "timestamp": 1789449577630,
+        "isRead": true
+      }
+    ],
+    "2": [
+      {
+        "id": 201,
+        "threadId": 2,
+        "senderId": "1",
+        "receiverId": "5",
+        "senderName": "Admin",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "Hello Saadan! Your order #10019 has been processed and ready for dispatch. Courier tracking: TRK-9837192 via DHL Express.",
+        "createdAt": "09:00 AM",
+        "timestamp": 1789439677630,
+        "isRead": true
+      },
+      {
+        "id": 202,
+        "threadId": 2,
+        "senderId": "1",
+        "receiverId": "5",
+        "senderName": "Admin",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "Your order has been queued for shipping dispatch.",
+        "createdAt": "09:02 AM",
+        "timestamp": 1789439797630,
+        "isRead": true
+      },
+      {
+        "id": 203,
+        "threadId": 2,
+        "senderId": "5",
+        "receiverId": "1",
+        "senderName": "Saadan",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "haloo",
+        "createdAt": "12:11 PM",
+        "timestamp": 1789449637630,
+        "isRead": true
+      },
+      {
+        "id": 204,
+        "threadId": 2,
+        "senderId": "1",
+        "receiverId": "5",
+        "senderName": "Admin",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "tes",
+        "createdAt": "12:25 PM",
+        "timestamp": 1789450177630,
+        "isRead": true
+      },
+      {
+        "id": 17894505786841302,
+        "threadId": 2,
+        "senderId": "5",
+        "receiverId": "1",
+        "senderName": "Saadan",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "test node",
+        "createdAt": "12.36",
+        "timestamp": 1789450578647,
+        "isRead": true
+      },
+      {
+        "id": 17894505966011924,
+        "threadId": 2,
+        "senderId": "5",
+        "receiverId": "1",
+        "senderName": "Saadan",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "haloo",
+        "createdAt": "12.36",
+        "timestamp": 1789450596601,
+        "isRead": true
+      },
+      {
+        "id": 17894506005406328,
+        "threadId": 2,
+        "senderId": "5",
+        "receiverId": "1",
+        "senderName": "Saadan",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "hei",
+        "createdAt": "12.36",
+        "timestamp": 1789450600540,
+        "isRead": true
+      },
+      {
+        "id": 17894506067892952,
+        "threadId": 2,
+        "senderId": "1",
+        "receiverId": "5",
+        "senderName": "Admin",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "ohh iyaa",
+        "createdAt": "12.36",
+        "timestamp": 1789450606789,
+        "isRead": true
+      },
+      {
+        "id": 17894507570395316,
+        "threadId": 2,
+        "senderId": "5",
+        "receiverId": "1",
+        "senderName": "Saadan",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "haloo",
+        "createdAt": "12.39",
+        "timestamp": 1789450757038,
+        "isRead": false
+      }
+    ],
+    "3": [
+      {
+        "id": 301,
+        "threadId": 3,
+        "senderId": "4",
+        "receiverId": "3",
+        "senderName": "Peter Jone",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "Hello, can you confirm if the Black bag over the shoulder comes with adjustable shoulder strap?",
+        "createdAt": "Yesterday 14:10",
+        "timestamp": 1789360477630,
+        "isRead": true
+      },
+      {
+        "id": 302,
+        "threadId": 3,
+        "senderId": "3",
+        "receiverId": "4",
+        "senderName": "Trendshop",
+        "senderAvatar": "/sites/modesy/avatar-vendor.jpg",
+        "message": "Yes Peter, it comes with an adjustable and detachable leather shoulder strap!",
+        "createdAt": "Yesterday 14:15",
+        "timestamp": 1789364077630,
+        "isRead": true
+      }
+    ],
+    "1789717567930963": [
+      {
+        "id": 17897175712504832,
+        "threadId": 1789717567930963,
+        "senderId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "receiverId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "senderName": "indi",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "hi",
+        "createdAt": "02:46 PM",
+        "timestamp": 1789717571032,
+        "isRead": true
+      },
+      {
+        "id": 17897175967730428,
+        "threadId": 1789717567930963,
+        "senderId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "receiverId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "senderName": "trendshop",
+        "senderAvatar": "/sites/modesy/avatar-admin.jpg",
+        "message": "opo bos",
+        "createdAt": "02:46 PM",
+        "timestamp": 1789717596772,
+        "isRead": true
+      },
+      {
+        "id": 17897220345695868,
+        "threadId": 1789717567930963,
+        "senderId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "receiverId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "senderName": "trendshop",
+        "senderAvatar": "/images/trendshop-profile.jpg",
+        "message": "tes",
+        "createdAt": "04:00 PM",
+        "timestamp": 1789722034471,
+        "isRead": true
+      },
+      {
+        "id": 17897221323435518,
+        "threadId": 1789717567930963,
+        "senderId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "receiverId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "senderName": "trendshop",
+        "senderAvatar": "/images/trendshop-profile.jpg",
+        "message": "tes indi hai halo sip",
+        "createdAt": "04:02 PM",
+        "timestamp": 1789722132341,
+        "isRead": true
+      },
+      {
+        "id": 17900563610268532,
+        "threadId": 1789717567930963,
+        "senderId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "receiverId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "senderName": "indi",
+        "senderAvatar": "/images/indi-profile.jpg",
+        "message": "hi",
+        "createdAt": "12:52 PM",
+        "timestamp": 1790056360983,
+        "isRead": true
+      },
+      {
+        "id": 17900563672063840,
+        "threadId": 1789717567930963,
+        "senderId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "receiverId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "senderName": "indi",
+        "senderAvatar": "/images/indi-profile.jpg",
+        "message": "tes 123",
+        "createdAt": "12:52 PM",
+        "timestamp": 1790056367204,
+        "isRead": true
+      },
+      {
+        "id": 17900564688128928,
+        "threadId": 1789717567930963,
+        "senderId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "receiverId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "senderName": "trendshop",
+        "senderAvatar": "/images/trendshop-profile.jpg",
+        "message": "tes",
+        "createdAt": "12:54 PM",
+        "timestamp": 1790056468811,
+        "isRead": true
+      },
+      {
+        "id": 17900564909602800,
+        "threadId": 1789717567930963,
+        "senderId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "receiverId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "senderName": "indi",
+        "senderAvatar": "/images/indi-profile.jpg",
+        "message": "tes",
+        "createdAt": "12:54 PM",
+        "timestamp": 1790056490959,
+        "isRead": true
+      },
+      {
+        "id": 17900564973729402,
+        "threadId": 1789717567930963,
+        "senderId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "receiverId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "senderName": "indi",
+        "senderAvatar": "/images/indi-profile.jpg",
+        "message": "12",
+        "createdAt": "12:54 PM",
+        "timestamp": 1790056497371,
+        "isRead": true
+      },
+      {
+        "id": 17900564996328896,
+        "threadId": 1789717567930963,
+        "senderId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "receiverId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "senderName": "indi",
+        "senderAvatar": "/images/indi-profile.jpg",
+        "message": "12",
+        "createdAt": "12:54 PM",
+        "timestamp": 1790056499630,
+        "isRead": true
+      },
+      {
+        "id": 17900565034150050,
+        "threadId": 1789717567930963,
+        "senderId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "receiverId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "senderName": "indi",
+        "senderAvatar": "/images/indi-profile.jpg",
+        "message": "222",
+        "createdAt": "12:55 PM",
+        "timestamp": 1790056503414,
+        "isRead": true
+      },
+      {
+        "id": 17900569064765346,
+        "threadId": 1789717567930963,
+        "senderId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "receiverId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "senderName": "indi",
+        "senderAvatar": "/images/indi-profile.jpg",
+        "message": "tes",
+        "createdAt": "01:01 PM",
+        "timestamp": 1790056906475,
+        "isRead": false
+      },
+      {
+        "id": 17900569137404700,
+        "threadId": 1789717567930963,
+        "senderId": "beab2ff0-4fb0-4da9-a6da-f2af4338aae5",
+        "receiverId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "senderName": "trendshop",
+        "senderAvatar": "/images/trendshop-profile.jpg",
+        "message": "hi besti",
+        "createdAt": "01:01 PM",
+        "timestamp": 1790056913739,
+        "isRead": false
+      }
+    ],
+    "1790056925112593": [
+      {
+        "id": 17900569295046978,
+        "threadId": 1790056925112593,
+        "senderId": "26e89f37-bc5d-4204-b12b-0a50ebab893b",
+        "receiverId": "1",
+        "senderName": "indi",
+        "senderAvatar": "/images/indi-profile.jpg",
+        "message": "woi",
+        "createdAt": "01:02 PM",
+        "timestamp": 1790056929503,
+        "isRead": false
+      }
+    ]
+  }
+}
