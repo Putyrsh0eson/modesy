@@ -8,6 +8,19 @@ import { submitOrder } from '@/lib/supabase';
 import { Check, CheckCircle, ShieldCheck, Truck, ArrowLeft } from 'lucide-react';
 import { Order } from '@/types/modesy';
 
+declare global {
+  interface Window {
+    snap?: {
+      pay: (token: string, options: {
+        onSuccess?: () => void;
+        onPending?: () => void;
+        onError?: () => void;
+        onClose?: () => void;
+      }) => void;
+    };
+  }
+}
+
 export default function ShippingCheckoutPage() {
   const { cartItems, removeFromCart, currency, user, setLoginModalOpen } = useModesy();
 
@@ -34,6 +47,20 @@ export default function ShippingCheckoutPage() {
       setEmail(current => current || user.email);
     }
   }, [user]);
+
+  useEffect(() => {
+    const scriptId = 'midtrans-snap-script';
+    if (document.getElementById(scriptId)) return;
+
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === 'true'
+      ? 'https://app.midtrans.com/snap/snap.js'
+      : 'https://app.sandbox.midtrans.com/snap/snap.js';
+    script.setAttribute('data-client-key', process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || '');
+    script.async = true;
+    document.body.appendChild(script);
+  }, []);
 
   const currencyRate = currency.code === 'IDR' ? 16000 : 1;
   const subtotal = cartItems.reduce(
@@ -81,7 +108,7 @@ export default function ShippingCheckoutPage() {
 
     setIsSubmitting(true);
     try {
-      const order = await submitOrder({
+      const orderData = {
         items: cartItems.map((item) => ({
           productId: item.product.id,
           title: item.product.title,
@@ -105,13 +132,53 @@ export default function ShippingCheckoutPage() {
           country,
         },
         paymentMethod,
-      });
+      };
+
+      if (paymentMethod === 'midtrans') {
+        if (!window.snap) {
+          throw new Error('Midtrans payment is still loading. Please try again.');
+        }
+
+        const orderId = `MODESY-${Date.now()}`;
+        const midtransResponse = await fetch('/api/payments/midtrans', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            orderId,
+            grossAmount: Math.round(total * currencyRate),
+            customer: { firstName: fullName, email, phone },
+          }),
+        });
+        const midtransData = await midtransResponse.json() as { token?: string; error?: string };
+        if (!midtransResponse.ok || !midtransData.token) {
+          throw new Error(midtransData.error || 'Unable to start Midtrans payment.');
+        }
+
+        window.snap.pay(midtransData.token, {
+          onSuccess: async () => {
+            const order = await submitOrder(orderData);
+            cartItems.forEach((item) => removeFromCart(item.product.id));
+            setCompletedOrder(order);
+            setIsSubmitting(false);
+          },
+          onPending: () => setIsSubmitting(false),
+          onError: () => {
+            alert('Midtrans payment failed. Please try again.');
+            setIsSubmitting(false);
+          },
+          onClose: () => setIsSubmitting(false),
+        });
+        return;
+      }
+
+      const order = await submitOrder(orderData);
 
       // Clear cart
       cartItems.forEach((item) => removeFromCart(item.product.id));
       setCompletedOrder(order);
     } catch (err) {
       console.error('Order error', err);
+      alert(err instanceof Error ? err.message : 'Unable to process payment.');
     } finally {
       setIsSubmitting(false);
     }
