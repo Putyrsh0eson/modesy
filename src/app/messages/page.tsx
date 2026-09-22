@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { Suspense, useEffect, useState, useRef, useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams } from 'next/navigation';
@@ -8,7 +8,7 @@ import { useModesy, PRESET_USERS } from '@/context/ModesyContext';
 import { chatService, ChatConversationItem, ChatMessage, ChatUser } from '@/services/chatService';
 import { Search, Send, CheckCheck, MessageSquare, UserCheck, Loader2 } from 'lucide-react';
 
-export default function MessagesPage() {
+function MessagesPageContent() {
   const { user } = useModesy();
   const searchParams = useSearchParams();
 
@@ -514,5 +514,13 @@ export default function MessagesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function MessagesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[400px]" />}>
+      <MessagesPageContent />
+    </Suspense>
   );
 }
